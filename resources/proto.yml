@@ -1,0 +1,179 @@
+- protocol: DocElement
+  concrete: GoogleDocElement
+  methods:
+  - name: add
+    oname: add
+    argscount: 1
+    doc: "Add an element at the end of this"
+    implementation: "(add-element k (:k (copy a)))"
+  - name: clearContent
+    oname: clear
+    argscount: 0
+    doc: "Remove all the content of the nested elements"
+  - name: copy
+    oname: copy
+    argscount: 0
+    wrap: "GoogleDocElement."
+    doc: "Copy an element to insert it in another one"
+  - name: getChild
+    oname: getChild
+    argscount: 1
+    wrap: "GoogleDocElement."
+    doc: "Get a child element"
+  - name: getNumChildren
+    oname: getNumChildren
+    argscount: 0
+    doc: "Get the number of child elements"
+  - name: getText
+    oname: getText
+    argscount: 0
+    doc: "Return the content of all the nested elements as text"
+  - name: getType
+    oname: getType
+    argscount: 0
+    doc: "Return the type (a string) of this element"
+  - name: insert
+    oname: insert
+    argscount: 2
+    doc: "Insert an element at a given point"
+    implementation: "(insert-element k a (:k (copy b)))"
+  - name: replaceText
+    oname: replaceText
+    argscount: 2
+    doc: "Replace text across element and all its descendant recursively"
+
+- protocol: Document
+  concrete: GoogleDocument
+  methods:
+  - name: getBody
+    oname: getBody
+    argscount: 0
+    doc: "Get the body element, root of the document"
+    wrap: "GoogleDocElement."
+  - name: getDocumentName
+    oname: getName
+    argscount: 0
+    doc: "Return the name of the Document"
+  - name: setDocumentName
+    oname: setName
+    argscount: 1
+    doc: "Set the name of the Document"
+  - name: getId
+    oname: getId
+    argscount: 0
+    doc: "Get the Id of this document"
+
+- protocol: Sheet
+  concrete: GoogleSheet
+  methods:
+  - name: appendRow
+    oname: appendRow
+    argscount: 1
+    doc: "Append a row [a b c ...] to this sheet"
+  - name: getName
+    oname: getName
+    argscount: 0
+    doc: "Return the name of the sheet"
+  - name: clearSheet
+    oname: clear
+    argscount: 0
+    doc: "Remove all the elements of this sheet"
+  - name: getSheetValues
+    oname: getSheetValues
+    argscount: 4
+    doc: "Get the value of a square identified by coordinates"
+
+- protocol: SpreadsheetDocument
+  concrete: GoogleSpreadsheetDocument
+  methods:
+    - name: getSheets
+      oname: getSheets
+      argscount: 0
+      doc: "Get the list of sheets for this spreadsheet document"
+      wrap: "map #(GoogleSheet. %)"
+    - name: getSheetByName
+      oname: getSheetByName
+      argscount: 1
+      doc: "Get a sheet by name"
+      wrap: "GoogleSheet."
+
+- protocol: UI
+  concrete: GoogleUI
+  methods:
+  - name: alert
+    oname: alert
+    argscount: 1
+    doc: "Display a message to the user"
+
+- protocol: ConsoleLogger
+  concrete: GoogleLogger
+  ctor: google-log
+  methods:
+  - name: info
+    oname: log
+    argscount: 1
+    doc: "Log a message to the console"
+
+# Multiple Implementation of the document app one for
+# google doc and one for sheets, they both map to one protocol
+- protocol: DocumentApp
+  concrete:
+    - concrete: GoogleDocumentApp
+      ctor: google-doc-app
+      methods:
+        - name: openByUrl
+          oname: openByUrl
+          argscount: 1
+          doc: "Returns a document matching <url> or nil"
+          wrap: "GoogleDocument."
+        - name: getUI
+          oname: getUi
+          argscount: 0
+          doc: "Get a UI associated with this app"
+          wrap: "GoogleUI."
+    - concrete: GoogleSheetApp
+      ctor: google-sheet-app
+      methods:
+        - name: openByUrl
+          oname: openByUrl
+          argscount: 1
+          doc: "Returns a document matching <url> or nil"
+          wrap: "GoogleSpreadsheetDocument."
+        - name: getUI
+          oname: getUi
+          argscount: 0
+          doc: "Get a UI associated with this app"
+          wrap: "GoogleUI."
+
+- protocol: DriveFile
+  concrete: GoogleDriveFile
+  methods:
+    - name: getFileUrl
+      oname: getUrl
+      argscount: 0
+      doc: "Get the URL of the drive file"
+    - name: makeCopy
+      oname: makeCopy
+      argscount: 1
+      doc: "Copy a file, returns a copy"
+      wrap: "GoogleDriveFile."
+
+- protocol: DriveApp
+  concrete: GoogleDriveApp
+  ctor: google-drive-app
+  methods:
+    - name: getFileById
+      oname: getFileById
+      argscount: 1
+      doc: "Get a file by <id> or nil, returns a Drive File"
+      wrap: "GoogleDriveFile."
+
+- protocol: GmailApp
+  concrete: GoogleGmailApp
+  ctor: google-mail-app
+  methods:
+    - name: sendEmail
+      oname: sendEmail
+      argscount: 3
+      doc: "Send an email"
+
